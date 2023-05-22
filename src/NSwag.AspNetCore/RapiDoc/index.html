@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1,user-scalable=yes">
+    <title>{DocumentTitle}</title>
+    <link rel="stylesheet" href="./default.min.css">
+    <script src="./highlight.min.js"></script>
+    <script defer="defer" src="./rapidoc-min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    {CustomStyle}
+</head>
+<body>
+    <script>
+        window.onload = function () {
+            var url = window.location.search.match(/url=([^&]+)/);
+            if (url && url.length > 1) {
+                url = decodeURIComponent(url[1]);
+            } else {
+                url = undefined;
+            }
+
+            const docEl = document.getElementById('thedoc');
+            docEl.setAttribute('spec-url', url);
+            const rapidocAttributes = {AdditionalAttributes};
+
+            for (const [key, value] of Object.entries(rapidocAttributes)) {
+                docEl.setAttribute(key, value);
+            }
+        }
+
+        //window.addEventListener('DOMContentLoaded', (event) => {            
+        //    const docEl = document.getElementById('thedoc');
+        //    docEl.addEventListener('before-try', (e) => {
+        //        e.detail.request.headers.append('AAA-BBB', 'CCC DDDD');
+        //    });
+        //});
+
+    </script>
+    <rapi-doc id="thedoc"></rapi-doc>
+
+    {CustomScript}
+</body>
+</html>

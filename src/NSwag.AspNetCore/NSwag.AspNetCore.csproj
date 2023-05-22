@@ -26,6 +26,11 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\assets\NuGetIcon.png" Pack="true" PackagePath="" />
+    <EmbeddedResource Include="RapiDoc\default.min.css" />
+    <EmbeddedResource Include="RapiDoc\highlight.min.js" />
+    <EmbeddedResource Include="RapiDoc\index.html" />
+    <EmbeddedResource Include="RapiDoc\oauth-receiver.html" />
+    <EmbeddedResource Include="RapiDoc\rapidoc-min.js" />
     <EmbeddedResource Include="ReDoc\index.html" />
     <EmbeddedResource Include="SwaggerUi\**\*" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
     <EmbeddedResource Include="SwaggerUi3\**\*" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
@@ -58,6 +63,13 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'net7.0' ">
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="$(MicrosoftExtensionsFileProvidersEmbeddedPackageVersionNet7)" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="RapiDoc\default.min.css" />
+    <None Remove="RapiDoc\highlight.min.js" />
+    <None Remove="RapiDoc\index.html" />
+    <None Remove="RapiDoc\oauth-receiver.html" />
+    <None Remove="RapiDoc\rapidoc-min.js" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NSwag.Annotations\NSwag.Annotations.csproj" />

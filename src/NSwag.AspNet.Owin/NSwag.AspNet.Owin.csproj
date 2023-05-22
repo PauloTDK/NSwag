@@ -26,6 +26,7 @@
   <ItemGroup>
     <Compile Include="..\NSwag.AspNetCore\HttpRequestExtension.cs" Link="HttpRequestExtension.cs" />
     <Compile Include="..\NSwag.AspNetCore\OAuth2ClientSettings.cs" Link="OAuth2ClientSettings.cs" />
+    <Compile Include="..\NSwag.AspNetCore\RapiDocSettings.cs" Link="RapiDocSettings.cs" />
     <Compile Include="..\NSwag.AspNetCore\ReDocSettings.cs" Link="ReDocSettings.cs" />
     <Compile Include="..\NSwag.AspNetCore\SwaggerSettings.cs" Link="SwaggerSettings.cs" />
     <Compile Include="..\NSwag.AspNetCore\SwaggerUi3Settings.cs" Link="SwaggerUi3Settings.cs" />

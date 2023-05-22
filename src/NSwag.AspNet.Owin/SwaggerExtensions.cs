@@ -289,5 +289,78 @@ namespace NSwag.AspNet.Owin
         }
 
         #endregion
+
+        #region RapiDoc
+
+        /// <summary>Addes the Swagger generator and Swagger UI to the OWIN pipeline.</summary>
+        /// <param name="app">The app.</param>
+        /// <param name="webApiAssembly">The Web API assembly to search for controller types.</param>
+        /// <param name="configure">Configure the Swagger settings.</param>
+        /// <returns>The app builder.</returns>
+        public static IAppBuilder UseSwaggerRapiDoc(
+            this IAppBuilder app,
+            Assembly webApiAssembly,
+            Action<RapiDocSettings<WebApiOpenApiDocumentGeneratorSettings>> configure = null)
+        {
+            return app.UseSwaggerRapiDoc(new[] { webApiAssembly }, configure);
+        }
+
+        /// <summary>Addes the Swagger generator and Swagger UI to the OWIN pipeline.</summary>
+        /// <param name="app">The app.</param>
+        /// <param name="webApiAssemblies">The Web API assemblies to search for controller types.</param>
+        /// <param name="configure">Configure the Swagger settings.</param>
+        /// <returns>The app builder.</returns>
+        public static IAppBuilder UseSwaggerRapiDoc(
+            this IAppBuilder app,
+            IEnumerable<Assembly> webApiAssemblies,
+            Action<RapiDocSettings<WebApiOpenApiDocumentGeneratorSettings>> configure = null)
+        {
+            var controllerTypes = webApiAssemblies.SelectMany(WebApiOpenApiDocumentGenerator.GetControllerClasses);
+            return app.UseSwaggerRapiDoc(controllerTypes, configure);
+        }
+
+        /// <summary>Addes the Swagger UI (only) to the OWIN pipeline.</summary>
+        /// <param name="app">The app.</param>
+        /// <param name="configure">Configure the Swagger settings.</param>
+        /// <returns>The app builder.</returns>
+        public static IAppBuilder UseSwaggerRapiDoc(
+            this IAppBuilder app,
+            Action<RapiDocSettings<WebApiOpenApiDocumentGeneratorSettings>> configure = null)
+        {
+            return app.UseSwaggerRapiDoc((IEnumerable<Type>)null, configure);
+        }
+
+        /// <summary>Addes the Swagger generator and Swagger UI to the OWIN pipeline.</summary>
+        /// <param name="app">The app.</param>
+        /// <param name="controllerTypes">The Web API controller types.</param>
+        /// <param name="configure">Configure the Swagger settings.</param>
+        /// <returns>The app builder.</returns>
+        public static IAppBuilder UseSwaggerRapiDoc(
+            this IAppBuilder app,
+            IEnumerable<Type> controllerTypes,
+            Action<RapiDocSettings<WebApiOpenApiDocumentGeneratorSettings>> configure = null)
+        {
+            var settings = new RapiDocSettings<WebApiOpenApiDocumentGeneratorSettings>();
+            configure?.Invoke(settings);
+
+            if (controllerTypes != null)
+            {
+                app.Use<OpenApiDocumentMiddleware>(settings.ActualSwaggerDocumentPath, controllerTypes, settings);
+            }
+
+            app.Use<RedirectToIndexMiddleware>(settings.ActualSwaggerUiPath, settings.ActualSwaggerDocumentPath, settings.TransformToExternalPath);
+            app.Use<SwaggerUiIndexMiddleware<WebApiOpenApiDocumentGeneratorSettings>>(settings.ActualSwaggerUiPath + "/index.html", settings, "NSwag.AspNet.Owin.RapiDoc.index.html");
+            app.UseFileServer(new FileServerOptions
+            {
+                RequestPath = new PathString(settings.ActualSwaggerUiPath),
+                FileSystem = new EmbeddedResourceFileSystem(typeof(SwaggerExtensions).Assembly, "NSwag.AspNet.Owin.RapiDoc")
+            });
+            app.UseStageMarker(PipelineStage.MapHandler);
+            return app;
+        }
+
+        #endregion
+
+
     }
 }

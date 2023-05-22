@@ -269,5 +269,31 @@ Please wait...
                 register(settings.ActualSwaggerDocumentPath, settings.ActualSwaggerUiPath);
             }
         }
+
+        /// <summary>Adds the RapiDoc UI (UI only) to the pipeline (default route: /swagger).</summary>
+        /// <remarks>The settings.GeneratorSettings property does not have any effect.</remarks>
+        /// <param name="app">The app.</param>
+        /// <param name="configure">Configure the Swagger settings.</param>
+        /// <returns>The app builder.</returns>
+        public static IApplicationBuilder UseRapiDoc(
+            this IApplicationBuilder app,
+            Action<RapiDocSettings> configure = null)
+        {
+            var settings = configure == null ? app.ApplicationServices.GetService<IOptions<RapiDocSettings>>()?.Value : null ?? new RapiDocSettings();
+            configure?.Invoke(settings);
+
+            UseSwaggerUiWithDocumentNamePlaceholderExpanding(app, settings, (swaggerRoute, swaggerUiRoute) =>
+            {
+                app.UseMiddleware<RedirectToIndexMiddleware>(swaggerUiRoute, swaggerRoute, settings.TransformToExternalPath);
+                app.UseMiddleware<SwaggerUiIndexMiddleware>(swaggerUiRoute + "/index.html", settings, "NSwag.AspNetCore.RapiDoc.index.html");
+                app.UseFileServer(new FileServerOptions
+                {
+                    RequestPath = new PathString(swaggerUiRoute),
+                    FileProvider = new EmbeddedFileProvider(typeof(NSwagApplicationBuilderExtensions).GetTypeInfo().Assembly, "NSwag.AspNetCore.RapiDoc")
+                });
+            }, (documents) => false);
+
+            return app;
+        }
     }
 }
